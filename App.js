@@ -23,29 +23,36 @@ export default class App extends React.Component {
     reminders = JSON.parse(reminders)
     this.setState({ reminders })
   }
+
   setDate = (newDate) => {
     this.setState({ chosenDate: newDate })
     console.log(newDate)
-    this.toggleAdd()
+    // this.toggleAdd()
   }
 
+  getTimeFromString = (string) =>{
+    let date =  new Date(string)
+    let h = date.getHours()
+    let m = date.getMinutes()
+    return `${h}:${m}`
+  }
+
+
   toggleAdd = async () => {
+    const {reminders, chosenDate} = this.state
     console.log('Adding test reminder')
-    let reminder = {
-      time: (this.state.chosenDate).toString()
-    }
+    let reminder = { date: chosenDate.toString() }
     let newReminders = []
     try {
-      AsyncStorage.getItem('reminders',
-        (err, resp) => {
-          storageData = JSON.parse(resp)
-          newReminders = storageData ? [...storageData, reminder] : [reminder]
-          AsyncStorage.setItem('reminders', JSON.stringify(newReminders))
-            .then(r => this.setState({ reminders: [...this.state.reminders, reminder] }))
-        })
-    } catch (e) {
+        AsyncStorage.getItem('reminders', (error, resp) => {
+            let storageData = JSON.parse(resp)
+            newReminders = storageData ? [...storageData, reminder] : [reminder]
+            AsyncStorage.setItem('reminders', JSON.stringify(newReminders))
+              .then(() => this.setState({ reminders: [...reminders, reminder] }))
+          })
+    } catch (error) {
       console.log('failed')
-      alert(e)
+      alert(error)
     }
   }
 
@@ -73,10 +80,10 @@ export default class App extends React.Component {
               />
               <List>
                   { this.state.reminders && this.state.reminders.map(r =>
-                    <Card key={r.time.split()[7]}>
+                    <Card>
                       <CardItem>
                         <Text>
-                          { r.time }
+                          {` ${this.getTimeFromString(r.date)}`}
                         </Text>
                       </CardItem>
                     </Card>
@@ -88,7 +95,7 @@ export default class App extends React.Component {
                 <Button
                 full
                   onPress={ this.toggleAdd }>
-                  <Text>Add current date</Text>
+                  <Text>Add selected time</Text>
                </Button>
                 <Button 
                 full
