@@ -1,9 +1,8 @@
-import React from 'react';
+import React from 'react'
 import {
-  StyleSheet, AsyncStorage, ScrollView
-  //  Text, Button, View 
-} from 'react-native';
-import { Container, Header, Content, List, ListItem, Right, Left, Title, Body, Button, Text, View, } from 'native-base'; const reminders = require('./reminders.json')
+  StyleSheet, AsyncStorage, ScrollView } from 'react-native'
+import { Container, Header, Content, List, ListItem,  Title, Body, Button, Text, View, Footer, FooterTab} from 'native-base' 
+const reminders = require('./reminders.json')
 export default class App extends React.Component {
 
 
@@ -51,17 +50,17 @@ export default class App extends React.Component {
 
   render() {
     return (
-      <View style={{flex:1}}>
-      <View>
-        <Header>
-          <Title>
-            Current Dates
-          </Title>
-        </Header>
         <ScrollView>
           <Container style={ { backgroundColor: '#66b2b2', } }>
-            <Content>
+          <Header>
+            <Title>
+              Current Dates
+          </Title>
+          </Header>
+          <Content>
+            
               <List>
+                  
                   { this.state.reminders && this.state.reminders.map(r =>
                     <ListItem>
                       <Body>
@@ -71,21 +70,28 @@ export default class App extends React.Component {
                       </Body>
                     </ListItem>
                   ) }
-                <Button
-                  onPress={ this.toggleAdd }
-                  title="Test me"
-                />
-                <Button
-                  onPress={ this.clearMe }
-                  title="Clear reminders"
-                />
               </List>
             </Content>
+            <Footer>
+              <FooterTab>
+                <Button
+                full
+                  onPress={ this.toggleAdd }>
+                  <Text>"Test me"</Text>
+               </Button>
+                <Button 
+                full
+                onPress={this.clearMe }>
+                  <Text>
+                    Clear me
+                  </Text>
+                </Button>
+               
+                </FooterTab>
+            </Footer>
           </Container>
         </ScrollView>
-      </View>
-      </View>
-    );
+    )
   }
 }
 
@@ -104,4 +110,4 @@ const styles = StyleSheet.create({
     fontSize: 50,
     color: '#fff',
   }
-});
+})
