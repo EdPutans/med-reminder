@@ -1,14 +1,21 @@
 import React from 'react'
 import {
   StyleSheet, AsyncStorage, ScrollView } from 'react-native'
-import { Container, Header, Content, List, ListItem,  Title, Body, Button, Text, View, Footer, FooterTab} from 'native-base' 
-const reminders = require('./reminders.json')
+import { 
+  Container, Header, Content, Body, 
+  List, ListItem, Title, Text,
+  Button, Footer, FooterTab,
+  Card, CardItem,
+} from 'native-base' 
+
+import DateSet from './Components/DateSet'
+
+
 export default class App extends React.Component {
 
 
   state = {
-    adding: false,
-    // reminders: []
+
   }
 
   async componentDidMount() {
@@ -33,12 +40,10 @@ export default class App extends React.Component {
             .then(r => this.setState({ reminders: [...this.state.reminders, reminder] }))
         }
       )
-
     } catch (e) {
       console.log('failed')
       alert(e)
     }
-    console.log({ newReminders })
   }
 
 
@@ -58,18 +63,19 @@ export default class App extends React.Component {
           </Title>
           </Header>
           <Content>
-            
+              <DateSet>
+                
+              </DateSet>
               <List>
-                  
                   { this.state.reminders && this.state.reminders.map(r =>
-                    <ListItem>
-                      <Body>
-                        <Text style={ styles.white } > 
-                        { r.time }
+                    <Card key={r.time.split()[7]}>
+                      <CardItem>
+                        <Text  >
+                          { r.time }
                         </Text>
-                      </Body>
-                    </ListItem>
-                  ) }
+                      </CardItem>
+                    </Card>
+                  )}
               </List>
             </Content>
             <Footer>
@@ -77,7 +83,7 @@ export default class App extends React.Component {
                 <Button
                 full
                   onPress={ this.toggleAdd }>
-                  <Text>"Test me"</Text>
+                  <Text>Add current date</Text>
                </Button>
                 <Button 
                 full
