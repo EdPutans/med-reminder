@@ -15,7 +15,7 @@ export default class App extends React.Component {
 
 
   state = {
-
+    chosenDate: new Date()
   }
 
   async componentDidMount() {
@@ -23,12 +23,16 @@ export default class App extends React.Component {
     reminders = JSON.parse(reminders)
     this.setState({ reminders })
   }
-
+  setDate = (newDate) => {
+    this.setState({ chosenDate: newDate })
+    console.log(newDate)
+    this.toggleAdd()
+  }
 
   toggleAdd = async () => {
     console.log('Adding test reminder')
     let reminder = {
-      time: (new Date()).toString()
+      time: (this.state.chosenDate).toString()
     }
     let newReminders = []
     try {
@@ -38,8 +42,7 @@ export default class App extends React.Component {
           newReminders = storageData ? [...storageData, reminder] : [reminder]
           AsyncStorage.setItem('reminders', JSON.stringify(newReminders))
             .then(r => this.setState({ reminders: [...this.state.reminders, reminder] }))
-        }
-      )
+        })
     } catch (e) {
       console.log('failed')
       alert(e)
@@ -63,14 +66,16 @@ export default class App extends React.Component {
           </Title>
           </Header>
           <Content>
-              <DateSet>
-                
-              </DateSet>
+              <DateSet  
+                setDate={this.setDate}
+                chosenDate={this.state.chosenDate}
+              
+              />
               <List>
                   { this.state.reminders && this.state.reminders.map(r =>
                     <Card key={r.time.split()[7]}>
                       <CardItem>
-                        <Text  >
+                        <Text>
                           { r.time }
                         </Text>
                       </CardItem>
