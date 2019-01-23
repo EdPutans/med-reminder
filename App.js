@@ -32,8 +32,15 @@ export default class App extends React.Component {
 
   getTimeFromString = (string) =>{
     let date =  new Date(string)
-    let h = date.getHours()
-    let m = date.getMinutes()
+    let h = date.getHours().toString()
+    if(h.length===1){
+      h = "0" + h
+    }
+    
+    let m = date.getMinutes().toString()
+    if (m.length === 1) {
+      m = "0" + m
+    }
     return `${h}:${m}`
   }
 
@@ -45,10 +52,15 @@ export default class App extends React.Component {
     let newReminders = []
     try {
         AsyncStorage.getItem('reminders', (error, resp) => {
+            error && alert(error)
             let storageData = JSON.parse(resp)
-            newReminders = storageData ? [...storageData, reminder] : [reminder]
+            if(storageData){
+              newReminders = [...storageData, reminder]
+            }else{
+              newReminders = [reminder]
+            }
             AsyncStorage.setItem('reminders', JSON.stringify(newReminders))
-              .then(() => this.setState({ reminders: [...reminders, reminder] }))
+              .then(() => this.setState({ reminders: newReminders }))
           })
     } catch (error) {
       console.log('failed')
