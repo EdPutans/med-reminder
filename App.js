@@ -1,48 +1,79 @@
 import React from 'react';
-import { StyleSheet, Text, View, Button } from 'react-native';
-import RNFS from 'react-native-fs'
-
+import { StyleSheet, Text, View, Button, AsyncStorage } from 'react-native';
+// import RNFS from 'react-native-fs'
+const reminders = require('./reminders.json')
 export default class App extends React.Component {
 
 
   state = {
     adding: false,
-    // reminders: allreminders.reminders
+    // reminders: []
   }
 
-  componentDidMount(){
-   RNFS.readFile('./reminders.txt', 'utf-8')
-    .then(res=> console.log({res}))
-    // console.log({reminders: this.state.reminders})
+  async componentDidMount(){
+    let reminders = await AsyncStorage.getItem('reminders')
+    reminders = JSON.parse(reminders)
+    this.setState({reminders})
   }
 
-  toggleAdd = () => {
-    this.setState({adding: !this.state.adding})
-    console.log(this.state)
-    let dateObj = {time: new Date('January 22, 2019 18:00:00')}
 
+  toggleAdd = async () =>{
+    console.log('Adding test reminder')
+    let reminder = {time: new Date()}
+    let newReminders = []
+    try {
+      AsyncStorage.getItem('reminders', 
+        (err, resp)=>{
+          storageData = JSON.parse(resp)
+          // console.log(storageData)
+          newReminders = storageData? [...storageData, reminder] : [reminder]
+          AsyncStorage.setItem('reminders', JSON.stringify(newReminders))
+            .then(r => this.setState({ reminders: r }))
+          }
+      )
+      
+    } catch (e) {
+      console.log('failed')
+      alert(e)
+    }
+    console.log({newReminders})
   }
+   
 
+  // displayData = async () => {
+  //   try{
+  //     let user = await AsyncStorage.getItem('reminders')
+  //     alert(user)
+  //   }catch(e){
+  //     alert(error)
+  //   }
+  // }
+
+  clearMe = async () => {
+    await AsyncStorage.removeItem('reminders')
+    this.setState({ reminders: [] })
+    console.log('Cleared storage')
+    
+  }
 
   render() {
     return (
       <View style={styles.container}>
       <Text style={styles.whiteTitle}>
-            {this.state.reminders && "Henlo"}
+            {this.state.reminders && this.state.reminders.map(r=>r['time'])}
         </Text>
         <Text style={styles.whiteTitle}>
             Medrem
         </Text>
-        {
-          // (this.state.reminders.map(d=> 
-          // <Text>
-          //   {d.time.toString()})
-          // </Text>))
-        }
         <Button 
           onPress={this.toggleAdd} 
-          title="+"
+          title="Test me"
         />
+        <Button 
+          onPress={this.clearMe}
+          title="Clear reminders"
+        />
+
       </View>
     );
   }
