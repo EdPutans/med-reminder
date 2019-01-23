@@ -1,6 +1,8 @@
 {
+  "name": "Medrem",
+  "displayName": "Medrem",
   "expo": {
-    "name": "medrem",
+    "name": "MedRem",
     "slug": "medrem",
     "privacy": "public",
     "sdkVersion": "32.0.0",

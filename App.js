@@ -1,7 +1,9 @@
 import React from 'react';
-import { StyleSheet, Text, View, Button, AsyncStorage } from 'react-native';
-// import RNFS from 'react-native-fs'
-const reminders = require('./reminders.json')
+import {
+  StyleSheet, AsyncStorage, ScrollView
+  //  Text, Button, View 
+} from 'react-native';
+import { Container, Header, Content, List, ListItem, Right, Left, Title, Body, Button, Text, View, } from 'native-base'; const reminders = require('./reminders.json')
 export default class App extends React.Component {
 
 
@@ -10,70 +12,78 @@ export default class App extends React.Component {
     // reminders: []
   }
 
-  async componentDidMount(){
+  async componentDidMount() {
     let reminders = await AsyncStorage.getItem('reminders')
     reminders = JSON.parse(reminders)
-    this.setState({reminders})
+    this.setState({ reminders })
   }
 
 
-  toggleAdd = async () =>{
+  toggleAdd = async () => {
     console.log('Adding test reminder')
-    let reminder = {time: new Date()}
+    let reminder = {
+      time: (new Date()).toString()
+    }
     let newReminders = []
     try {
-      AsyncStorage.getItem('reminders', 
-        (err, resp)=>{
+      AsyncStorage.getItem('reminders',
+        (err, resp) => {
           storageData = JSON.parse(resp)
-          // console.log(storageData)
-          newReminders = storageData? [...storageData, reminder] : [reminder]
+          newReminders = storageData ? [...storageData, reminder] : [reminder]
           AsyncStorage.setItem('reminders', JSON.stringify(newReminders))
-            .then(r => this.setState({ reminders: r }))
-          }
+            .then(r => this.setState({ reminders: [...this.state.reminders, reminder] }))
+        }
       )
-      
+
     } catch (e) {
       console.log('failed')
       alert(e)
     }
-    console.log({newReminders})
+    console.log({ newReminders })
   }
-   
 
-  // displayData = async () => {
-  //   try{
-  //     let user = await AsyncStorage.getItem('reminders')
-  //     alert(user)
-  //   }catch(e){
-  //     alert(error)
-  //   }
-  // }
 
   clearMe = async () => {
     await AsyncStorage.removeItem('reminders')
     this.setState({ reminders: [] })
     console.log('Cleared storage')
-    
   }
 
   render() {
     return (
-      <View style={styles.container}>
-      <Text style={styles.whiteTitle}>
-            {this.state.reminders && this.state.reminders.map(r=>r['time'])}
-        </Text>
-        <Text style={styles.whiteTitle}>
-            Medrem
-        </Text>
-        <Button 
-          onPress={this.toggleAdd} 
-          title="Test me"
-        />
-        <Button 
-          onPress={this.clearMe}
-          title="Clear reminders"
-        />
-
+      <View style={{flex:1}}>
+      <View>
+        <Header>
+          <Title>
+            Current Dates
+          </Title>
+        </Header>
+        <ScrollView>
+          <Container style={ { backgroundColor: '#66b2b2', } }>
+            <Content>
+              <List>
+                  { this.state.reminders && this.state.reminders.map(r =>
+                    <ListItem>
+                      <Body>
+                        <Text style={ styles.white } > 
+                        { r.time }
+                        </Text>
+                      </Body>
+                    </ListItem>
+                  ) }
+                <Button
+                  onPress={ this.toggleAdd }
+                  title="Test me"
+                />
+                <Button
+                  onPress={ this.clearMe }
+                  title="Clear reminders"
+                />
+              </List>
+            </Content>
+          </Container>
+        </ScrollView>
+      </View>
       </View>
     );
   }
@@ -81,12 +91,15 @@ export default class App extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#66b2b2',
+
     alignItems: 'center',
     justifyContent: 'center',
   },
-
+  white: {
+    zIndex: 100,
+    fontSize: 10,
+    color: '#fff',
+  },
   whiteTitle: {
     fontSize: 50,
     color: '#fff',
